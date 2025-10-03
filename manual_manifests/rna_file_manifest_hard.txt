@@ -1,0 +1,8 @@
+../processed_data/20250730_rna_trimgal_hard3/14-008_S11_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-008_S11_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S11
+../processed_data/20250730_rna_trimgal_hard3/14-218_S12_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-218_S12_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S12
+../processed_data/20250730_rna_trimgal_hard3/14-341_S13_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-341_S13_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S13
+../processed_data/20250730_rna_trimgal_hard3/14-377_S14_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-377_S14_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S14
+../processed_data/20250730_rna_trimgal_hard3/14-401_S15_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-401_S15_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S15
+../processed_data/20250730_rna_trimgal_hard3/14-422_S16_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-422_S16_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S16
+../processed_data/20250730_rna_trimgal_hard3/14-445_S17_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-445_S17_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S17
+../processed_data/20250730_rna_trimgal_hard3/14-470_S18_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz	../processed_data/20250730_rna_trimgal_hard3/14-470_S18_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz	S18

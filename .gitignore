@@ -1,0 +1,7 @@
+#we will ignore the raw_data and processed_data folders because these will be available through other resources like NCBI and Zenodo. Otherwise we will fill up the GitHub repo
+
+raw_data/
+processed_data/
+comp_env/*.sif
+comp_env/orad.2.7.0.linux/
+comp_env/oradata/
