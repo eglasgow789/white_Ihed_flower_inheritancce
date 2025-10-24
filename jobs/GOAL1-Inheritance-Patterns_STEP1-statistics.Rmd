@@ -1,0 +1,66 @@
+---
+title: "White Flower Inheritance Patterns"
+output: html_document
+date: "2025-10-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Preface
+The goal of this script is to determine whether the inheritance patterns of white flowers follow a Mendelian pattern.
+
+The assumed working directory is the jobs folder.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+## Dataframe Management
+
+```{r}
+#read in dataframe
+df = read.csv("../raw_data/flower_color_counts.csv", sep = "\t")
+df$stem_pigment = as.numeric(df$stem_pigment)
+
+#because stem pigment completely matches flower color, we will use the stem pigment data to increase sample size
+#I will also analyze the results for flower color, but it's roughly the same 30.8% white vs 28.5%
+chisq.test(table(df$stem_pigment))
+chisq.test(table(df$flower_colour))
+
+summary_df = data.frame(color = c("purple", "white", "purple", "white"),
+                        group = c("Observed", "Observed", "Expected", "Expected"),
+                        values = c(sum(df$stem_pigment == 1, na.rm = TRUE),
+                                   sum(df$stem_pigment == 0, na.rm = TRUE),
+                                   .75 * sum(df$stem_pigment <= 1, na.rm = TRUE),
+                                   .25 * sum(df$stem_pigment <= 1, na.rm = TRUE)))
+```
+
+## Plotting
+
+```{r}
+#color aesthetics
+purple_flower = "#6d6aa8ff"
+color_palette = c("grey80", purple_flower)
+colorman = c(color_palette)
+names(colorman) = c("white", "purple")
+
+summary_df$color = factor(summary_df$color, levels = c("white", "purple"))
+(p = ggplot(summary_df[summary_df$group == "Observed",], aes(fill = color)) +
+  geom_col(aes(x = color, y = values)) +
+  scale_fill_manual(values = colorman) +
+  theme_minimal() +
+  geom_segment(data = summary_df[summary_df$group == "Expected",], aes(x = c(0.75, 1.75), xend = c(1.25, 2.25), y = summary_df$values[c(4,3)], yend = summary_df$values[c(4,3)])) +
+  xlab("") +
+  ylab("Count") +
+  theme(legend.position = "none") +
+  geom_hline(yintercept = 0, color = "gray40")
+)
+
+svg("../base_images/GOAL1-Inheritance.svg", width = 4, height = 3.5)
+p
+dev.off()
+```
+
