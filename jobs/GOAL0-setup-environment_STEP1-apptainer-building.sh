@@ -26,3 +26,6 @@ tar -xzvf oradata_all_species.tar.gz
 
 rm orad.2.7.0.linux.tar.gz
 rm oradata_all_species.tar.gz
+
+#build apptainer for coverage analysis
+apptainer build --fakeroot mosdepth_apptainer.sif mosdepth_apptainer.def
