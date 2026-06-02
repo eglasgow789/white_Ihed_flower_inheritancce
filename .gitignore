@@ -5,3 +5,4 @@ processed_data/
 comp_env/*.sif
 comp_env/orad.2.7.0.linux/
 comp_env/oradata/
+jobs/pipeline_scripts/ihed_diamond.dmnd

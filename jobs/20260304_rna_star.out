@@ -1,0 +1,116 @@
+mkdir: cannot create directory ‘../processed_data/20260304_Ihed_index’: File exists
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --runMode genomeGenerate --genomeDir ../processed_data/20260304_Ihed_index --genomeFastaFiles ../raw_data/I_hederacea_v1.0.fa --sjdbGTFfile ../raw_data/I.hed-braker-rna-orthodb.gtf --sjdbOverhang 149 --genomeSAindexNbases 13
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:09:06 ..... started STAR run
+Mar 04 08:09:06 ... starting to generate Genome files
+Mar 04 08:09:12 ..... processing annotations GTF
+Mar 04 08:09:14 ... starting to sort Suffix Array. This may take a long time...
+Mar 04 08:09:16 ... sorting Suffix Array chunks and saving them to disk...
+Mar 04 08:10:25 ... loading chunks from disk, packing SA...
+Mar 04 08:10:33 ... finished generating suffix array
+Mar 04 08:10:33 ... generating Suffix Array index
+Mar 04 08:11:17 ... completed Suffix Array index
+Mar 04 08:11:17 ..... inserting junctions into the genome indices
+Mar 04 08:12:01 ... writing Genome to disk ...
+Mar 04 08:12:02 ... writing Suffix Array to disk ...
+Mar 04 08:12:05 ... writing SAindex to disk
+Mar 04 08:12:05 ..... finished successfully
+mkdir: cannot create directory ‘../processed_data/20260304_star_align_out’: File exists
+../processed_data/20250730_rna_trimgal_hard3/14-008_S11_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-008_S11_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S11
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-008_S11_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-008_S11_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S11
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:12:06 ..... started STAR run
+Mar 04 08:12:06 ..... loading genome
+Mar 04 08:12:07 ..... started mapping
+Mar 04 08:13:21 ..... finished mapping
+Mar 04 08:13:21 ..... started sorting BAM
+Mar 04 08:13:29 ..... finished successfully
+../processed_data/20250730_rna_trimgal_hard3/14-218_S12_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-218_S12_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S12
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-218_S12_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-218_S12_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S12
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:13:32 ..... started STAR run
+Mar 04 08:13:32 ..... loading genome
+Mar 04 08:13:33 ..... started mapping
+Mar 04 08:15:31 ..... finished mapping
+Mar 04 08:15:31 ..... started sorting BAM
+Mar 04 08:15:40 ..... finished successfully
+../processed_data/20250730_rna_trimgal_hard3/14-341_S13_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-341_S13_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S13
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-341_S13_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-341_S13_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S13
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:15:43 ..... started STAR run
+Mar 04 08:15:43 ..... loading genome
+Mar 04 08:15:45 ..... started mapping
+Mar 04 08:16:56 ..... finished mapping
+Mar 04 08:16:56 ..... started sorting BAM
+Mar 04 08:17:07 ..... finished successfully
+../processed_data/20250730_rna_trimgal_hard3/14-377_S14_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-377_S14_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S14
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-377_S14_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-377_S14_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S14
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:17:10 ..... started STAR run
+Mar 04 08:17:10 ..... loading genome
+Mar 04 08:17:11 ..... started mapping
+Mar 04 08:18:21 ..... finished mapping
+Mar 04 08:18:22 ..... started sorting BAM
+Mar 04 08:18:31 ..... finished successfully
+../processed_data/20250730_rna_trimgal_hard3/14-401_S15_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-401_S15_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S15
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-401_S15_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-401_S15_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S15
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:18:34 ..... started STAR run
+Mar 04 08:18:34 ..... loading genome
+Mar 04 08:18:35 ..... started mapping
+Mar 04 08:20:14 ..... finished mapping
+Mar 04 08:20:14 ..... started sorting BAM
+Mar 04 08:20:23 ..... finished successfully
+../processed_data/20250730_rna_trimgal_hard3/14-422_S16_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-422_S16_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S16
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-422_S16_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-422_S16_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S16
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:20:26 ..... started STAR run
+Mar 04 08:20:26 ..... loading genome
+Mar 04 08:20:27 ..... started mapping
+Mar 04 08:21:59 ..... finished mapping
+Mar 04 08:21:59 ..... started sorting BAM
+Mar 04 08:22:07 ..... finished successfully
+../processed_data/20250730_rna_trimgal_hard3/14-445_S17_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-445_S17_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S17
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-445_S17_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-445_S17_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S17
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:22:11 ..... started STAR run
+Mar 04 08:22:11 ..... loading genome
+Mar 04 08:22:12 ..... started mapping
+Mar 04 08:23:32 ..... finished mapping
+Mar 04 08:23:32 ..... started sorting BAM
+Mar 04 08:23:39 ..... finished successfully
+../processed_data/20250730_rna_trimgal_hard3/14-470_S18_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz
+../processed_data/20250730_rna_trimgal_hard3/14-470_S18_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz
+S18
+	/opt/conda/envs/20250730_aligners/bin/STAR-avx2 --runThreadN 15 --genomeDir ../processed_data/20260304_Ihed_index --readFilesIn ../processed_data/20250730_rna_trimgal_hard3/14-470_S18_L001_R1_001_val_1.145bp_5prime.135bp_3prime.fq.gz ../processed_data/20250730_rna_trimgal_hard3/14-470_S18_L001_R2_001_val_2.145bp_5prime.135bp_3prime.fq.gz --readFilesCommand gunzip -c --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix ../processed_data/20260304_star_align_out/S18
+	STAR version: 2.7.11b   compiled: 2025-07-24T03:06:21+0000 :/opt/conda/conda-bld/star_1753326220084/work/source
+Mar 04 08:23:42 ..... started STAR run
+Mar 04 08:23:42 ..... loading genome
+Mar 04 08:23:43 ..... started mapping
+Mar 04 08:25:00 ..... finished mapping
+Mar 04 08:25:00 ..... started sorting BAM
+Mar 04 08:25:09 ..... finished successfully
+
+/// MultiQC 🔍 v1.30
+
+       file_search | Search path: /project/6004275/github_repos/white_Ihed_flower_inheritancce/processed_data/20260304_star_align_out
+
+              star | Found 8 reports and 8 gene count files
+
+     write_results | Data        : ../processed_data/20260304_star_align_out/20260304_multiqc_data
+     write_results | Report      : ../processed_data/20260304_star_align_out/20260304_multiqc.html
+           multiqc | MultiQC complete

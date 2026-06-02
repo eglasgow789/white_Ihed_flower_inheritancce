@@ -27,14 +27,14 @@ library(patchwork)
 
 ## Initiating Variables
 ```{r var_init}
-genecountdir = "../processed_data/20250730_star_align_out/" #directory containing the read counts from STAR
+genecountdir = "../processed_data/20260304_star_align_out/" #directory containing the read counts from STAR
 strandcolumn = 4 #whether to use unstranded (2), forward stranded (3), or reverse stranded (4) counts
 grouplist1 = c("white", "white", "purple", "purple", "white", "purple", "white", "purple") #levels of factor of interest in alphabetical order of files (i.e., the same order as list.files output)
 group1_order = c("white", "purple") #order of levels you want for group1 so that control/low group is always the same
 test_type = "LRT" #type of test for DESeq analysis. Wald is preferred if you're just doing your model against a full null. LRT is useful if you're comparing between a full model and a simplified model
 alpha_cutoff = 0.05 #alpha cut-off for multiple hypothesis correction of DESeq2 results
 color_palette1 = c("grey80", "#c371e2") #color palette for plotting. colors will correspond to the order of the levels in group1_order
-genome_manifest = "../manual_manifests/20250806_Ihederaceae_araport11_diamondblastp_moresensitive.csv" #path to file containing DIAMOND/BLAST search of reference genome hits against arabidopsis database. Note, we may change this to tomato later in the script because that is a closer species with more variation in flower color and a lot of the genes in the anthocyanin pathway are within the same gene family. So, something as distantly related as arabidopsis thaliana may not be a good reference. 
+genome_manifest = "../manual_manifests/20260304_Ihederaceae_hits_araport11_moresensitive.csv" #path to file containing DIAMOND/BLAST search of reference genome hits against arabidopsis database. Note, we may change this to tomato later in the script because that is a closer species with more variation in flower color and a lot of the genes in the anthocyanin pathway are within the same gene family. So, something as distantly related as arabidopsis thaliana may not be a good reference. 
 ```
 
 ## Dataframe Management
@@ -109,14 +109,15 @@ sig_genes = res[res$padj < alpha_cutoff,]
 print(rownames(sig_genes))
 
 #read in genome manifest to add information about significant hits
-refseq_hits = read.csv(genome_manifest)
+refseq_hits = read.csv(genome_manifest, sep = "\t", header = FALSE)
+refseq_hits$ref_gene_id = sapply(strsplit(refseq_hits$V1, ".", fixed = TRUE), "[[", 1)
 
 #add refseq hit info
 sig_genes_descriptive = merge(as.data.frame(sig_genes), refseq_hits, by.x = 0, by.y = "ref_gene_id", all.x = TRUE)
 sig_genes_descriptive$enrichment = ifelse(sig_genes_descriptive$log2FoldChange < 0, group1_order[1], group1_order[2])
 
 #export results
-write.table(sig_genes_descriptive, "../processed_data/20250804_margaret_whitevpurple_significantDESeqgenes_LRT_araport11.tsv", row.names = FALSE, quote = FALSE, sep = "\t")
+write.table(sig_genes_descriptive, "../processed_data/20260305_margaret_whitevpurple_significantDESeqgenes_LRT_araport11.tsv", row.names = FALSE, quote = FALSE, sep = "\t")
 ```
 
 ## Quick plotting of DESeq2 results
@@ -210,7 +211,7 @@ kegg_df$ec_id = sapply(kegg_df$kegg_long, function(x) str_extract(x, "(?<=\\[EC\
 kegg_df$at_kegg = NULL
 kegg_df$kegg_kegg = NULL
 
-write.table(kegg_df, "../processed_data/20250807_arabidopsis_kegg_map.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(kegg_df, "../processed_data/20260305_arabidopsis_kegg_map.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
 ## Gene Expression Heatmap
@@ -221,8 +222,9 @@ samp_exp_df = as.data.frame(assay(samp_exp))
 
 #create map of anthocyanin pathway genes to ipomoea arabidopsis hits
 antho_genes = read_ods("../manual_manifests/manual_network_tables.ods", sheet = 4) #some of the pathway genes are missing in arabidopsis, so we will have to manually add from whole nr search
-refseq_hits$repo_gene_id = sapply(refseq_hits$repo_accession, function(x) strsplit(x, ".", fixed = TRUE)[[1]][1])
+refseq_hits$repo_gene_id = sapply(refseq_hits$V2, function(x) strsplit(x, ".", fixed = TRUE)[[1]][1])
 ref_antho = refseq_hits[refseq_hits$repo_gene_id %in% antho_genes$arabidopsis_id,]
+ref_antho$ref_coverage = ref_antho$V4/ref_antho$V11
 
 #only keep entries where the alignment coverage of the ipomoea gene is more than 70%
 ref_antho = ref_antho[ref_antho$ref_coverage >= .7,]
@@ -230,14 +232,14 @@ ref_antho = ref_antho[ref_antho$ref_coverage >= .7,]
 #get top representative for each gene
 ref_antho = ref_antho %>%
   group_by(ref_gene_id) %>%
-  filter(evalue == min(evalue)) %>%
+  filter(V3 == min(V3)) %>%
   filter(row_number() == 1)
 
 ref_antho = merge(ref_antho, antho_genes, by.x = "repo_gene_id", by.y = "arabidopsis_id")
 
-#let's add g2401 to the list which, in nil, is closer to UF3GT and 3'GT. It's hard to say which is which since blasts results are really similar
+#let's add g2417 to the list which, in nil, is closer to UF3GT and 3'GT. It's hard to say which is which since blasts results are really similar
 antho_exp = samp_exp_df[row.names(samp_exp_df) %in% ref_antho$ref_gene_id,]
-antho_exp[dim(antho_exp)[1]+1,] = samp_exp_df[rownames(samp_exp_df) == "g2401",]
+antho_exp[dim(antho_exp)[1]+1,] = samp_exp_df[rownames(samp_exp_df) == "g2417",]
 
 #reorder the columns so white is on one side and purple on the other
 antho_exp = antho_exp[,c(1,2,5,7,3,4,6,8)]
@@ -262,11 +264,11 @@ antho_fc$ref_gene_id = row.names(antho_fc)
 antho_fc = antho_fc[antho_fc$ref_gene_id %in% antho_exp$ref_gene_id,]
 
 antho_fc = merge(antho_fc, ref_antho, by = "ref_gene_id", all.x = TRUE)
-antho_fc[antho_fc$ref_gene_id == "g2401", "gene_symbol_short"] = "g2401"
+antho_fc[antho_fc$ref_gene_id == "g2417", "gene_symbol_short"] = "g2417"
 
 #change level order of gene_symbol_short to roughly match the order in the pathway
 antho_fc$gene_symbol_short = factor(antho_fc$gene_symbol_short, levels = c(
-  "CHS", "CHI", "F3H", "F3’H", "DFR", "FLS", "ANS", "UF3GT", "5GT", "g2401"
+  "CHS", "CHI", "F3H", "F3’H", "DFR", "FLS", "ANS", "UF3GT", "5GT", "g2417"
 ))
 
 ggplot(antho_fc, aes(x = gene_symbol_short, y = log2FoldChange, fill = gene_symbol_short, alpha = -log(padj))) +
@@ -277,6 +279,14 @@ ggplot(antho_fc, aes(x = gene_symbol_short, y = log2FoldChange, fill = gene_symb
 
 ```{r}
 antho_fc$gene_symbol_short = factor(antho_fc$gene_symbol_short, levels = rev(levels(antho_fc$gene_symbol_short)))
+
+#Currently, the ref_antho dataset has all the DIAMOND hits which is a lot for the glycosyltransferases in this pathway. There are just so many GTs in general in the genome.
+#Let's pick the top 3 per gene.
+antho_fc = antho_fc %>%
+  group_by(ref_gene_id) %>%
+  slice_min(order_by = V3, n = 3)
+
+antho_fc$ref_norm_coverage = antho_fc$ref_coverage * (antho_fc$V5/100)
 
 ggplot(antho_fc, aes(x = log2FoldChange, y = gene_symbol_short)) +
   geom_point(color = "#c371e2", alpha = ifelse(antho_fc$padj <= 0.05, 1, .3), size = 3) +
@@ -295,9 +305,9 @@ The missing genes are: F3'5'H (EC:1.14.14.81; Tomato: 100736504, Tomato Uniprot:
 
 ```{r}
 #read in DIAMOND blastp output of search for the missing genes in Ipomoea
-f3p5ph_diamond = read.table("../manual_manifests/20250826_tomato_f35h_uniprot-d3w9h7_diamondblastp_moresensitive.txt", header = FALSE)
-gen3pgt_diamond = read.table("../manual_manifests/20250826_gentiana_3pGT_uniprot-q8h0f2_diamondblastp_moresensitive.txt", header = FALSE)
-bz1_diamond = read.table("../manual_manifests/20250826_tomato_bz1_uniprot-A0A3Q7IMM2_diamondblastp_moresensitive.txt", header = FALSE) #g2401 is the top hit here so pretty confident that's who it is
+f3p5ph_diamond = read.table("../processed_data/20260306_tomato_f35h_uniprot-d3w9h7_diamondblastp_moresensitive.txt", header = FALSE)
+gen3pgt_diamond = read.table("../processed_data/20260306_gentiana_3pGT_uniprot-q8h0f2_diamondblastp_moresensitive.txt", header = FALSE)
+bz1_diamond = read.table("../processed_data/20260306_tomato_bz1_uniprot-A0A3Q7IMM2_diamondblastp_moresensitive.txt", header = FALSE) #g2417 is the top hit here so pretty confident that's who it is
 
 #get gene names of the top 5 hits to make comparable with the full genome search
 f3p5ph_diamond = f3p5ph_diamond[1:5,]
@@ -332,51 +342,20 @@ fullpath_fc$gene_symbol_short = factor(fullpath_fc$gene_symbol_short, levels = r
   "CHS", "CHI", "F3H", "F3’H", "DFR", "FLS", "ANS", "F3'5'H",  "BZ1", "UF3GT", "5GT", "3'GT"
 )))
 
+#because we added g2417 when we searched against BZ1 in tomato, we need to remove the previous instance which has g2417 id as NA
+fullpath_fc = fullpath_fc[!is.na(fullpath_fc$gene_symbol_short),]
 
 ggplot(fullpath_fc, aes(x = log2FoldChange, y = gene_symbol_short)) +
   geom_point(color = "#c371e2", alpha = ifelse(fullpath_fc$padj <= 0.05, 1, .3), size = 3) +
   geom_errorbarh(aes(xmax = log2FoldChange + lfcSE, xmin = log2FoldChange - lfcSE), color = "#c371e2", alpha = ifelse(fullpath_fc$padj <= 0.05, 1, .3), height = 0) +
-  theme_minimal() +
-  annotate("text", x = fullpath_fc[fullpath_fc$ref_gene_id == "g2401", "log2FoldChange"], y = "BZ1", label = "g2401", vjust = -.7) +
+  theme_minimal() + 
+  annotate("text", x = as.numeric(fullpath_fc[fullpath_fc$ref_gene_id == "g2417", "log2FoldChange"]), y = "BZ1", label = "g2417", vjust = -.7) +
   geom_vline(xintercept = 0) +
   theme(legend.position = "none") +
   xlab("log2(Fold Change)") +
   ylab("Gene")
 ```
 
-## Exclusively only using tomato KEGGs
-
-Because a lot of these genes are part of the same family, we may want to only use hits from a closely related species with a good annotation. This will be tomato. I am manually searching KEGG for these sequences from Solanum lycopersicum unless indicated otherwise in the species column of the input dataframe.
-
-```{r}
-#read in DIAMOND BLASTp results of tomato anthocyanin genes
-tomato_kegg_blast = read.table("../manual_manifests/20250910_tomato_anthokegg_diamondblastp_moresensitive.txt", header = FALSE)
-
-#filter for max top 3 hits per search
-tom_filt = tomato_kegg_blast %>%
-  group_by(V1) %>%
-  slice_min(V3, n = 3)
-
-tom_filt$antho_gene = sapply(strsplit(tom_filt$V1, "|", fixed = TRUE), function(x) x[1])
-tom_filt$gene_id = sapply(strsplit(tom_filt$V2, ".", fixed = TRUE), function(x) x[1])
-
-tom_filt = merge(tom_filt, as.data.frame(res), by.x = "gene_id", by.y = 0, all.x = TRUE)
-
-tom_filt$antho_gene = factor(tom_filt$antho_gene, levels = rev(c(
-  "CHS", "CHI", "F3H", "F3'H", "DFR", "FLS", "ANS", "F3'5'H",  "BZ1", "UF3GT"
-)))
-
-
-ggplot(tom_filt, aes(x = log2FoldChange, y = antho_gene)) +
-  geom_point(color = ifelse(tom_filt$padj <= 0.05, "#c371e2", "grey"), size = 3, alpha = ifelse(tom_filt$padj <= 0.05, 1, .3)) +
-  geom_errorbarh(aes(xmax = log2FoldChange + lfcSE, xmin = log2FoldChange - lfcSE), color = ifelse(tom_filt$padj <= 0.05, "#c371e2", "grey"), alpha = ifelse(tom_filt$padj <= 0.05, 1, .3), height = 0) +
-  theme_minimal() +
-  annotate("text", x = tom_filt[tom_filt$gene_id == "g2401", "log2FoldChange"], y = "BZ1", label = "g2401", vjust = -.7) +
-  geom_vline(xintercept = 0) +
-  theme(legend.position = "none") +
-  xlab("log2(Fold Change)") +
-  ylab("Gene")
-```
 ## Base Image for Manuscript
 We will build a two part plot using patchwork. We will then add svgs of white and purple flowers in Inkscape and make any small text edits in Inkscape too.
 
@@ -392,17 +371,17 @@ names(colorman2) = group1_order
   geom_vline(xintercept = 0, color = "grey40") +
   geom_point(aes(color = enrichment, alpha = padj < 0.05)) +
   scale_color_manual(values = colorman2) +
-  annotate("text", x = sig_genes[rownames(sig_genes) == "g2401", "log2FoldChange"], y = -log(sig_genes[rownames(sig_genes) == "g2401", "padj"]), label = "g2401", vjust = 1.5) +
+  annotate("text", x = sig_genes[rownames(sig_genes) == "g2417", "log2FoldChange"], y = -log(sig_genes[rownames(sig_genes) == "g2417", "padj"]), label = "g2417", vjust = 1.5) +
   theme_minimal() +
    theme(legend.position = "none")
 )
 
-(p2 = ggplot(tom_filt, aes(x = log2FoldChange, y = antho_gene)) +
+(p2 = ggplot(fullpath_fc, aes(x = log2FoldChange, y = gene_symbol_short)) +
   geom_vline(xintercept = 0, color = "grey40") +
-  geom_point(color = ifelse(tom_filt$padj <= 0.05, purple_flower, "grey"), size = 3, alpha = ifelse(tom_filt$padj <= 0.05, 1, .3)) +
-  geom_errorbarh(aes(xmax = log2FoldChange + lfcSE, xmin = log2FoldChange - lfcSE), color = ifelse(tom_filt$padj <= 0.05, purple_flower, "grey"), alpha = ifelse(tom_filt$padj <= 0.05, 1, .3), height = 0) +
+  geom_point(color = ifelse(fullpath_fc$padj <= 0.05, purple_flower, "grey"), size = 3, alpha = ifelse(fullpath_fc$padj <= 0.05, 1, .3)) +
+  geom_errorbarh(aes(xmax = log2FoldChange + lfcSE, xmin = log2FoldChange - lfcSE), color = ifelse(fullpath_fc$padj <= 0.05, purple_flower, "grey"), alpha = ifelse(fullpath_fc$padj <= 0.05, 1, .3), height = 0) +
   theme_minimal() +
-  annotate("text", x = tom_filt[tom_filt$gene_id == "g2401", "log2FoldChange"], y = "BZ1", label = "g2401", vjust = -.7) +
+  annotate("text", x = as.numeric(fullpath_fc[fullpath_fc$ref_gene_id == "g2417", "log2FoldChange"]), y = "BZ1", label = "g2417", vjust = -.7) +
   theme(legend.position = "none") +
   xlab("log2(Fold Change)") +
   ylab("")

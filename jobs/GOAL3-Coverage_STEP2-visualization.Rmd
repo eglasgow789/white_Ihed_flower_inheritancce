@@ -1,0 +1,162 @@
+---
+title: "Unpigmented Coverage"
+output: html_document
+date: "2026-01-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Preface
+The goal of this script is to plot coverage of all the sequenced plants from natural populations with blue/purple pigments to determine if anyone else has the BZ1 deletion we observe in the unpigmented parent plants.
+
+The assumed working directory is the jobs folder.
+```{r}
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+```
+
+## Initialize Variables
+```{r}
+COV_LOC = "../processed_data/mosdepth_out" #location of coverage data
+FILE_LIST = list.files(path = COV_LOC, pattern = ".bam.regions.bed$", full.names = TRUE)
+white_parent_file = "../processed_data/mosdepth_out/white_flower_parent.regions.bed"
+region = c(1500000, 1560000)
+```
+
+## Dataframe Management
+```{r}
+# #read in white parent data to initialize dataframe for adding on the other individuals
+# df = read.table(white_parent_file)
+# df10 = df[df$V1 == "Chr10",]
+# df10$source = "white_parent"
+# 
+# df10 = df10[(df10$V2 > region[1]) & (df10$V2 < region[2]),]
+# 
+# for (i in FILE_LIST) {
+#   holder = read.table(i)
+#   holder10 = holder[holder$V1 == "Chr10",]
+#   holder10$source = i
+#   holder10 = holder10[(holder10$V2 > region[1]) & (holder10$V2 < region[2]),]
+# 
+#   df10 = rbind(df10, holder10)
+# }
+# 
+# #write to disk to be able to just read in what we want in the future
+# write.table(df10,
+#             "../processed_data/bz1_coverage_all_individuals.tsv",
+#             sep = "\t",
+#             quote = FALSE)
+```
+
+```{r}
+df10 = read.table("../processed_data/bz1_coverage_all_individuals.tsv",
+                  header = TRUE,
+                  sep = "\t")
+
+#remove the samples that were not included with Amanda's publication. These were either duplicated in some way or, for her purposes, had sequencing issues around the indel in her paper
+not_amanda_files = c("SC545", "DE262", "GA723", "TN569", "TN653", "NJ295", "TN677", "TN692", "VA12")
+df10$shorthand = gsub(".*ea_(.+)_I.*", "\\1", df10$source)
+
+df10 = df10[!(df10$shorthand %in% not_amanda_files),]
+
+#read in gtf to get gene coordinates
+ihed_gtf = read.table("../raw_data/I.hed-braker-rna-orthodb.gtf", comment.char = "", sep = "\t")
+ihed_gtf = ihed_gtf[ihed_gtf$V3 == "gene",]
+ihed_gtf = ihed_gtf[ihed_gtf$V1 == "Chr10",]
+ihed_gtf = ihed_gtf[(ihed_gtf$V4 >= region[1]) & (ihed_gtf$V4 <= region[2]),]
+ihed_gtf$pos_mean = rowMeans(ihed_gtf[, c("V4", "V5")])
+
+#convert to binary for plotting. 1 is detected. 0 is undetected.
+df_bin = df10
+df_bin$V4= (df_bin$V4 > 0) * 1
+
+ggplot() +
+  geom_bin_2d(data = df10[df10$source != "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source)) +
+  scale_fill_gradient(low = "white", high = "#6d6aa8") +
+  geom_point(data = df10[df10$source == "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "grey30") +
+  geom_hline(yintercept = 0, color = "grey30") +
+  geom_linerange(data = ihed_gtf, aes(xmin = V4, xmax = V5, y = -.2), linewidth = 2, color = "grey30") +
+  annotate("text", x = ihed_gtf$pos_mean, y = -.38, label = ihed_gtf$V9, angle = 30, size = 8/.pt) +
+  theme_minimal() +
+  xlab("Genome Position (Chromosome 10)") +
+  ylab("ln(Coverage + 1)")
+
+ggplot() +
+  geom_line(data = df10[df10$source != "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "#6d6aa8", alpha = 0.1) +
+  #scale_fill_gradient(low = "white", high = "#6d6aa8") +
+  geom_line(data = df10[df10$source == "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "grey30", size = 1.5) +
+  #geom_hline(yintercept = 0, color = "grey30") +
+  geom_linerange(data = ihed_gtf, aes(xmin = V4, xmax = V5, y = -.2), linewidth = 2, color = "grey30") +
+  annotate("text", x = ihed_gtf$pos_mean, y = -.38, label = ihed_gtf$V9, angle = 30, size = 8/.pt) +
+  theme_minimal() +
+  xlab("Genome Position (Chromosome 10)") +
+  ylab("ln(Coverage + 1)")  +
+  ylim(-.5, 4.5)
+
+df_mean = df10[df10$source != "white_parent", ] %>%
+  group_by(V2) %>%
+  summarise(cov_mean = mean(V4))
+
+b = ggplot() +
+  geom_line(data = df10[df10$source != "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "#6d6aa8", alpha = 0.05) +
+  geom_line(data = df_mean, aes(x = V2, y = log(cov_mean + 1)), color = "#6d6aa8", size = 1.5) +
+  #scale_fill_gradient(low = "white", high = "#6d6aa8") +
+  geom_line(data = df10[df10$source == "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "grey30", size = 1.5) +
+  #geom_hline(yintercept = 0, color = "grey30") +
+  geom_linerange(data = ihed_gtf, aes(xmin = V4, xmax = V5, y = -.2), linewidth = 2, color = "grey30") +
+  annotate("text", x = ihed_gtf$pos_mean, y = -.38, label = ihed_gtf$V9, angle = 30, size = 8/.pt) +
+  theme_minimal() +
+  xlab("Genome Position (Chromosome 10)") +
+  ylab("ln(Coverage + 1)") +
+  xlim(c(1527000, 1530000))
+
+a = ggplot() +
+  geom_line(data = df10[df10$source == "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "grey30", size = 1.5) +
+  #geom_hline(yintercept = 0, color = "grey30") +
+  geom_linerange(data = ihed_gtf, aes(xmin = V4, xmax = V5, y = -.2), linewidth = 2, color = "grey30") +
+  annotate("text", x = ihed_gtf$pos_mean, y = -.38, label = ihed_gtf$V9, angle = 30, size = 8/.pt) +
+  theme_minimal() +
+  xlab("Genome Position (Chromosome 10)") +
+  ylab("ln(Coverage + 1)") +
+  ylim(-.5, 4.5)
+
+a / b
+
+d = ggplot() +
+  geom_line(data = df10[df10$source != "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "#6d6aa8", alpha = 0.05) +
+  geom_line(data = df_mean, aes(x = V2, y = log(cov_mean + 1)), color = "#6d6aa8", size = 1.5) +
+  #scale_fill_gradient(low = "white", high = "#6d6aa8") +
+  geom_line(data = df10[df10$source == "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "grey30", size = 1.5) +
+  #geom_hline(yintercept = 0, color = "grey30") +
+  geom_linerange(data = ihed_gtf, aes(xmin = V4, xmax = V5, y = -.2), linewidth = 1.5, color = "grey30") +
+  annotate("text", x = ihed_gtf$pos_mean, y = -.5, label = ihed_gtf$V9, angle = 30, size = 8/.pt) +
+  theme_minimal() +
+  xlab("Genome Position (Chromosome 10)") +
+  ylab("ln(Coverage + 1)") +
+  xlim(c(1527000, 1530000)) +
+  ylim(-.7, 4.5)
+
+c = ggplot() +
+  geom_line(data = df10[df10$source != "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "#6d6aa8", alpha = 0.05) +
+  geom_line(data = df_mean, aes(x = V2, y = log(cov_mean + 1)), color = "#6d6aa8", size = 1.5) +
+  geom_line(data = df10[df10$source == "white_parent", ], aes(x = V2, y = log(V4 + 1), group = source), color = "grey30", size = 1.5) +
+  #geom_hline(yintercept = 0, color = "grey30") +
+  geom_linerange(data = ihed_gtf, aes(xmin = V4, xmax = V5, y = -.2), linewidth = 1.5, color = "grey30") +
+  annotate("text", x = ihed_gtf$pos_mean, y = -.5, label = ihed_gtf$V9, angle = 30, size = 8/.pt) +
+  theme_minimal() +
+  xlab("Genome Position (Chromosome 10)") +
+  ylab("ln(Coverage + 1)") +
+  ylim(-.7, 4.5)
+
+c / d +
+  plot_layout(axis_titles = "collect")
+
+svg("../base_images/GOAL3-coverage_plot.svg", width = 7, height = 4)
+c / d +
+  plot_layout(axis_titles = "collect")
+dev.off()
+```
+

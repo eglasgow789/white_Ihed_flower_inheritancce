@@ -1,0 +1,42 @@
+---
+title: "Unpigmented Coverage"
+output: html_document
+date: "2026-01-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Preface
+The goal of this script is to plot coverage of all the sequenced plants from natural populations with blue/purple pigments to determine if anyone else has the BZ1 deletion we observe in the unpigmented parent plants.
+
+The assumed working directory is the jobs folder.
+```{r}
+library(ggplot2)
+```
+
+## Initialize Variables
+```{r}
+COV_LOC = "../processed_data/mosdepth_out" #location of coverage data
+FILE_LIST = list.files(path = COV_LOC, pattern = ".bam.regions.bed$", full.names = TRUE)
+white_parent_file = "../processed_data/mosdepth_out/white_flower_parent.regions.bed"
+```
+
+## Dataframe Management
+```{r}
+#read in white parent data to initialize dataframe for adding on the other individuals
+df = read.table(white_parent_file)
+df10 = df[df$V1 == "Chr10",]
+df10$source = "white_parent"
+
+for (i in FILE_LIST) {
+  holder = read.table(i)
+  holder10 = holder[holder$V1 == "Chr10",]
+  holder10$source = i
+  df10 = rbind(df10, holder10)
+}
+
+region = df10[(df10$V2 > 1500000) & (df10$V2 < 1600000),]
+```
+
