@@ -1,7 +1,4 @@
 # white_Ihed_flower_inheritancce
-# just a test fo setup on fir
-
-# white_Ihed_flower_inheritancce
 ## General Structure
 The general structure of this repository is that all jobs are run from the jobs folder as the assumed working directory.
 
